@@ -1,0 +1,87 @@
+在编程中，浅拷贝（shallow copy）和深拷贝（deep copy）是复制对象时两种不同的方式，它们在处理对象内部的引用类型（如指针、数组、其他对象等）时有所区别。
+
+1. 浅拷贝（Shallow Copy）
+
+定义：
+浅拷贝创建一个新对象，然后将原始对象中的非引用类型字段的值复制到新对象中。
+对于引用类型字段，浅拷贝只复制引用（内存地址），而不复制引用指向的对象。
+结果：
+新对象和原始对象共享引用类型字段指向的同一块内存。
+如果修改了其中一个对象中引用类型字段指向的对象，另一个对象也会受到影响。
+应用场景：
+适用于对象内部没有引用类型字段，或者引用类型字段指向的对象不需要独立复制的情况。
+示例（C++）：
+C++
+
+#include <iostream>
+
+class ShallowCopyExample {
+public:
+    int* ptr;
+
+    ShallowCopyExample(int value) {
+        ptr = new int(value);
+    }
+
+    ~ShallowCopyExample() {
+        delete ptr;
+    }
+};
+
+int main() {
+    ShallowCopyExample obj1(10);
+    ShallowCopyExample obj2 = obj1; // 浅拷贝
+
+    *obj2.ptr = 20; // 修改 obj2 指向的值
+
+    std::cout << *obj1.ptr << std::endl; // 输出：20（obj1 也受到影响）
+
+    return 0;
+}
+2. 深拷贝（Deep Copy）
+
+定义：
+深拷贝创建一个新对象，然后将原始对象中的所有字段的值（包括引用类型字段指向的对象）都复制到新对象中。
+对于引用类型字段，深拷贝会递归地创建新的对象，并将原始对象中引用类型字段指向的对象的内容复制到新对象中。
+结果：
+新对象和原始对象拥有各自独立的内存空间，互不影响。
+修改其中一个对象不会影响另一个对象。
+应用场景：
+适用于对象内部包含引用类型字段，并且需要独立复制引用类型字段指向的对象的情况。
+示例（C++）：
+C++
+
+#include <iostream>
+
+class DeepCopyExample {
+public:
+    int* ptr;
+
+    DeepCopyExample(int value) {
+        ptr = new int(value);
+    }
+
+    DeepCopyExample(const DeepCopyExample& other) { // 深拷贝构造函数
+        ptr = new int(*other.ptr); // 复制指针指向的值
+    }
+
+    ~DeepCopyExample() {
+        delete ptr;
+    }
+};
+
+int main() {
+    DeepCopyExample obj1(10);
+    DeepCopyExample obj2 = obj1; // 深拷贝
+
+    *obj2.ptr = 20; // 修改 obj2 指向的值
+
+    std::cout << *obj1.ptr << std::endl; // 输出：10（obj1 不受影响）
+
+    return 0;
+}
+总结：
+
+浅拷贝只复制引用，深拷贝复制对象内容。
+深拷贝需要手动实现，例如通过拷贝构造函数或赋值运算符重载。
+选择浅拷贝还是深拷贝取决于对象的具体情况和需求
